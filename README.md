@@ -63,8 +63,8 @@ trades) loses 5-15% on the same data purely to fees — see `research/`.
 ## What this is not
 
 It is not fitted to the sample's direction. It has no constant long or short
-bias: on this window it happens to end short because the window declined, and it
-flips long when the same z statistic turns positive. The parameters (240 bars,
+bias: on this window it first goes short and then ends long when the same z
+statistic turns positive. The parameters (240 bars,
 0.5σ) were picked from a plateau of neighbouring values that all give +2.3 to
 +3.2% with 2-9 trades, not from a single peak — the grid is in
 `research/tune.py`.

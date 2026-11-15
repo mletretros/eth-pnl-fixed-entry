@@ -24,24 +24,28 @@ python3 backtest.py /tmp/pos.csv
 | costs | 0.21% |
 | trades (position changes) | 2 |
 | max drawdown | 2.38% |
-| Sharpe (annualised, sqrt(1440)) | 26.57 |
+| Sharpe (daily-scaled, sqrt(1440), not annualised) | 1.07 |
 | time in market | 48.8% (702 / 1,440 bars) |
 
 Positions are flat for the first 738 bars, short from bar 738 to 1,310, then
 long from bar 1,311 to the end. There are only two transitions, both in the
 second half of the window.
 
-The Sharpe figure should not be read as a reliable risk-adjusted estimate: with
-only two trades most bar returns are exactly zero, so the return standard
-deviation is near zero and the ratio is numerically unstable. It is reported
-because `backtest.py` emits it, not as evidence of a high-quality edge.
+The previous Sharpe values were incorrect: the implementation subtracted the
+previous *return* from cumulative PnL, instead of the previous cumulative PnL.
+The corrected per-bar increments give 1.07 for the full window and 1.52 for the
+second half. The sqrt(1440) scale is daily, not annual. These in-sample values
+from one day and two transitions are not evidence of a reliable trading edge.
+The local cost model is fixed taker plus slippage per unit turnover; it does
+not reproduce an unpublished size-dependent official grader. The final open
+position is marked to market, with no terminal liquidation fee.
 
 ## Half split
 
 | window | net | gross | costs | trades | max DD | Sharpe |
 |---|---|---|---|---|---|---|
 | first half (bars 0-719) | 0.00% | 0.00% | 0.00% | 0 | 0.00% | 0.00 |
-| second half (bars 720-1439) | +3.17% | +3.38% | 0.21% | 2 | 2.38% | 52.59 |
+| second half (bars 720-1439) | +3.17% | +3.38% | 0.21% | 2 | 2.38% | 1.52 |
 
 All of the result comes from the second half. During the first half price never
 left the entry band, so the strategy stayed flat and paid nothing. This is a

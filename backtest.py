@@ -44,10 +44,12 @@ def replay(closes, pos, taker=TAKER, slip=SLIP, start=0, end=None):
             cash -= c
             cost += c
             trades += 1
-        rets.append(cash - (0 if not rets else rets[-1]))
+        rets.append(cash - prev)
+        prev = cash
         peak = max(peak, cash)
         mdd = max(mdd, peak - cash)
     sd = (sum((x - sum(rets) / len(rets)) ** 2 for x in rets) / len(rets)) ** 0.5 if rets else 0
+    # Minute-bar mean/std scaled to one day; this is NOT annualized.
     sharpe = (sum(rets) / len(rets) / sd * (1440 ** 0.5)) if sd else 0.0
     return {
         "net_pct": cash * 100,
